@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Musik - Jelajahi Dunia Alat Musik</title>
+    
+    <!-- Memuat Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Memuat Google Fonts untuk tampilan yang modern -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Mengatur font utama dan beberapa gaya dasar */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* [UBAH] Mengganti latar belakang utama menjadi gelap */
+            background-color: #0f172a; /* bg-slate-900 */
+        }
+        /* Animasi untuk modal dan panel pencarian */
+        #instrument-modal, #search-bar-mobile-container {
+            transition: all 0.3s ease-in-out;
+        }
+        /* Menambahkan smooth scroll behavior ke seluruh halaman */
+        html {
+            scroll-behavior: smooth;
+        }
+        .filter-btn.active {
+            background-color: #0ea5e9; /* bg-sky-500 */
+            color: white;
+        }
+        /* [UBAH] Menyesuaikan tampilan dropdown untuk mode gelap */
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+</head>
+<body class="text-slate-300">
+
+    <!-- Modal Detail Alat Musik -->
+    <div id="instrument-modal-overlay" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden items-center justify-center p-4">
+        <!-- [UBAH] Mengubah warna latar modal dan teks -->
+        <div id="instrument-modal" class="bg-slate-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col transform scale-95 opacity-0">
+            <!-- Konten modal dibuat scrollable -->
+            <div class="flex-grow overflow-y-auto">
+                <div class="md:flex">
+                    <div class="w-full md:w-1/2 p-4">
+                        <img id="modal-instrument-image" src="" alt="Gambar Alat Musik" class="w-full h-64 md:h-full object-cover rounded-lg">
+                    </div>
+                    <div class="w-full md:w-1/2 p-6 flex flex-col">
+                        <div class="flex justify-between items-start">
+                            <h2 id="modal-instrument-name" class="text-2xl md:text-3xl font-bold text-white mb-4">Nama Alat Musik</h2>
+                            <button id="close-modal-btn" class="text-slate-400 hover:text-white text-3xl leading-none">&times;</button>
+                        </div>
+                        <p id="modal-instrument-desc" class="text-slate-400 leading-relaxed text-justify">Deskripsi lengkap alat musik akan muncul di sini.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER DAN NAVIGASI -->
+    <!-- [UBAH] Memberi efek transparan pada header dan menyesuaikan warna teks/ikon -->
+    <header id="main-header" class="bg-slate-900/80 backdrop-blur-lg shadow-lg sticky top-0 z-30">
+        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-white">
+                <a href="#">Galeri<span class="text-sky-400">Musik</span></a>
+            </div>
+            
+            <div class="hidden md:flex items-center border border-slate-600 rounded-full px-4 py-1 flex-grow max-w-lg mx-8">
+                <input type="text" id="search-input-desktop" placeholder="Cari alat musik..." class="outline-none w-full bg-transparent text-white placeholder-slate-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+
+            <div class="flex items-center gap-4 sm:gap-6">
+                <button id="search-icon-mobile" class="md:hidden text-slate-400 hover:text-sky-400">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="search-bar-mobile-container" class="hidden p-4 bg-slate-800 border-t border-b border-slate-700">
+            <div class="flex items-center border border-slate-600 rounded-full px-4 py-2 w-full">
+                <input type="text" id="search-input-mobile" placeholder="Cari di Galeri Musik..." class="outline-none w-full bg-transparent text-white placeholder-slate-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- [UBAH] Menyesuaikan tombol pada banner -->
+        <section id="banner" class="bg-sky-600 text-white rounded-lg p-8 md:p-12 mb-10 text-center shadow-xl">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-3">Menjelajahi Dunia Alat Musik</h1>
+            <p class="text-lg md:text-xl mb-6">Temukan keindahan dan karakteristik unik dari berbagai instrumen populer.</p>
+            <a href="#instrument-list" id="explore-now-btn" class="bg-white text-sky-600 font-bold py-3 px-8 rounded-full hover:bg-slate-200 transition-transform transform hover:scale-105 inline-block">Mulai Jelajahi</a>
+        </section>
+        
+        <!-- [UBAH] Menyesuaikan warna kontrol filter dan sortir -->
+        <section id="controls" class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-400 mb-3">Filter Jenis:</h3>
+                <div id="filter-buttons" class="flex flex-wrap gap-2"></div>
+            </div>
+             <div>
+                <h3 class="text-lg font-semibold text-slate-400 mb-3 md:text-right">Urutkan:</h3>
+                <select id="sort-select" class="bg-slate-700 border border-slate-600 rounded-md shadow-sm p-2 text-white focus:ring-sky-500 focus:border-sky-500">
+                    <option value="default">Default</option>
+                    <option value="name-asc">Nama: A - Z</option>
+                    <option value="name-desc">Nama: Z - A</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- [UBAH] Menyesuaikan warna teks pesan "tidak ditemukan" -->
+        <div id="not-found-message" class="hidden text-center py-10">
+            <h3 class="text-2xl font-bold text-white">Oops! Alat musik tidak ditemukan.</h3>
+            <p class="text-slate-400 mt-2">Coba gunakan kata kunci lain untuk pencarian Anda.</p>
+        </div>
+        
+        <div id="instrument-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Kartu Alat Musik akan dirender oleh JavaScript di sini -->
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <!-- [UBAH] Menggelapkan footer dan menyesuaikan warna link -->
+    <footer class="bg-slate-800 text-slate-400 mt-12">
+        <div class="container mx-auto px-6 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3">GaleriMusik</h3>
+                    <p>Platform informatif untuk para pecinta musik.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3">Tautan Cepat</h3>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="hover:text-sky-400">Tentang Kami</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-sky-400">Kontak</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-sky-400">Kebijakan Privasi</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3">Ikuti Kami</h3>
+                    <div class="flex justify-center md:justify-start gap-4">
+                        <a href="#" class="hover:text-sky-400">Facebook</a>
+                        <a href="#" class="hover:text-sky-400">Instagram</a>
+                        <a href="#" class="hover:text-sky-400">YouTube</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-slate-700 mt-8 pt-6 text-center text-sm">
+                <p>&copy; 2025 GaleriMusik. Semua hak dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Data untuk artikel alat musik
+            const instrumentData = [
+                { name: 'Piano Digital & Akustik', category: 'Keyboard', shortDesc: 'Raja alat musik dengan rentang nada yang luas.', longDesc: 'Piano adalah alat musik yang dimainkan dengan menekan tuts, yang kemudian menggerakkan palu untuk memukul senar (pada piano akustik) atau memicu sampel suara (pada piano digital). Dikenal karena rentang dinamis dan kemampuannya untuk memainkan melodi dan harmoni secara bersamaan, piano menjadi instrumen fundamental dalam musik klasik, jazz, pop, dan banyak genre lainnya. Piano akustik (Grand dan Upright) menawarkan resonansi alami yang kaya, sementara piano digital memberikan fleksibilitas dengan berbagai suara, fitur rekaman, dan kemampuan bermain tanpa mengganggu orang lain menggunakan headphone.', imgSrc: 'https://placehold.co/400x300/3498db/ffffff?text=Piano' },
+                { name: 'Gitar Klasik & Akustik', category: 'Petik', shortDesc: 'Menghasilkan suara hangat dan natural.', longDesc: 'Gitar akustik menghasilkan suara melalui getaran senar yang diperkuat oleh badan gitar yang berlubang. Gitar klasik menggunakan senar nilon yang menghasilkan nada yang lembut dan hangat, ideal untuk musik klasik dan flamenco. Gitar akustik modern menggunakan senar baja (steel-string), menghasilkan suara yang lebih terang dan nyaring, menjadikannya populer di genre folk, pop, country, dan rock akustik. Keduanya adalah instrumen yang sangat portabel dan ekspresif, cocok untuk bermain solo maupun mengiringi vokal.', imgSrc: 'https://placehold.co/400x300/e67e22/ffffff?text=Gitar+Akustik' },
+                { name: 'Gitar Elektrik', category: 'Petik', shortDesc: 'Ikon musik rock dan genre modern lainnya.', longDesc: 'Berbeda dari gitar akustik, gitar elektrik memiliki bodi padat dan menggunakan pickup elektromagnetik untuk mengubah getaran senar menjadi sinyal listrik. Sinyal ini kemudian dikirim ke amplifier untuk diperkuat. Instrumen ini merevolusi musik populer pada abad ke-20. Dengan bantuan pedal efek, gitar elektrik dapat menghasilkan berbagai macam suara, dari nada bersih dan jernih hingga distorsi berat yang menjadi ciri khas musik rock dan metal. Fleksibilitasnya membuatnya menjadi tulang punggung di banyak band modern.', imgSrc: 'https://placehold.co/400x300/e74c3c/ffffff?text=Gitar+Elektrik' },
+                { name: 'Gitar Bass', category: 'Petik', shortDesc: 'Fondasi ritme dan harmoni dalam sebuah band.', longDesc: 'Gitar bass, atau bass elektrik, secara visual mirip dengan gitar elektrik tetapi memiliki senar yang lebih tebal dan panjang, menghasilkan nada yang satu oktaf lebih rendah. Peran utamanya adalah sebagai jembatan antara elemen ritmis (drum) dan harmonis (gitar/piano). Bass memberikan "groove" atau alur pada sebuah lagu dan mendefinisikan progresi akor. Bersama dengan drummer, pemain bass membentuk seksi ritme yang solid, yang menjadi dasar bagi instrumen lain untuk membangun musik di atasnya.', imgSrc: 'https://placehold.co/400x300/9b59b6/ffffff?text=Gitar+Bass' },
+                { name: 'Drum Set', category: 'Perkusi', shortDesc: 'Pemberi detak jantung dan energi dalam musik.', longDesc: 'Drum set adalah kumpulan instrumen perkusi yang diatur untuk dimainkan oleh satu orang. Set standar biasanya terdiri dari bass drum (ditendang dengan pedal), snare drum, beberapa tom-tom, hi-hat, serta simbal crash dan ride. Drummer adalah tulang punggung ritmis sebuah band, bertanggung jawab untuk menjaga tempo, menciptakan pola ritme yang menarik, dan memberikan dinamika pada sebuah lagu. Drum adalah salah satu instrumen paling fisik dan energik untuk dimainkan.', imgSrc: 'https://placehold.co/400x300/2ecc71/ffffff?text=Drum' },
+                { name: 'Biola', category: 'Gesek', shortDesc: 'Menghasilkan suara melankolis dan sangat ekspresif.', longDesc: 'Biola adalah alat musik dawai terkecil dan bernada tertinggi dalam keluarga instrumen gesek. Suara dihasilkan dengan menggesekkan busur (bow) pada senar atau dengan memetiknya (pizzicato). Biola terkenal karena kemampuannya menghasilkan nada yang sangat ekspresif, mampu meniru suara tangisan, tawa, atau nyanyian manusia. Instrumen ini merupakan bagian sentral dari orkestra simfoni dan musik kamar klasik, tetapi juga sering digunakan dalam genre lain seperti folk, country, dan jazz.', imgSrc: 'https://placehold.co/400x300/1abc9c/ffffff?text=Biola' },
+            ];
+
+            // Variabel untuk elemen DOM
+            const searchInputDesktop = document.getElementById('search-input-desktop');
+            const searchInputMobile = document.getElementById('search-input-mobile');
+            const searchIconMobile = document.getElementById('search-icon-mobile');
+            const searchBarMobileContainer = document.getElementById('search-bar-mobile-container');
+            const instrumentListContainer = document.getElementById('instrument-list');
+            const notFoundMessage = document.getElementById('not-found-message');
+            const instrumentModalOverlay = document.getElementById('instrument-modal-overlay');
+            const instrumentModal = document.getElementById('instrument-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalImage = document.getElementById('modal-instrument-image');
+            const modalName = document.getElementById('modal-instrument-name');
+            const modalDesc = document.getElementById('modal-instrument-desc');
+            const exploreNowBtn = document.getElementById('explore-now-btn');
+            const filterButtonsContainer = document.getElementById('filter-buttons');
+            const sortSelect = document.getElementById('sort-select');
+
+            // Fungsi untuk merender kartu alat musik
+            function renderInstrumentCards(instruments) {
+                instrumentListContainer.innerHTML = '';
+                if (instruments.length === 0) {
+                    notFoundMessage.classList.remove('hidden');
+                } else {
+                    notFoundMessage.classList.add('hidden');
+                    instruments.forEach(inst => {
+                        const card = document.createElement('div');
+                        // [UBAH] Mengganti warna kartu menjadi gelap
+                        card.className = 'instrument-card bg-slate-800 rounded-lg shadow-lg overflow-hidden group cursor-pointer hover:ring-2 hover:ring-sky-500 transition-all duration-300';
+                        card.innerHTML = `
+                            <div class="relative">
+                                <img src="${inst.imgSrc}" alt="${inst.name}" class="instrument-image w-full h-48 object-cover group-hover:opacity-90 transition-opacity">
+                            </div>
+                            <div class="p-5">
+                                <h3 class="instrument-name text-lg font-bold text-white mb-2">${inst.name}</h3>
+                                <p class="instrument-short-desc text-slate-400 text-sm mb-3">${inst.shortDesc}</p>
+                                <div class="flex items-center text-sm text-sky-400 font-semibold group-hover:text-sky-300 transition-colors">
+                                    Baca Selengkapnya &rarr;
+                                </div>
+                            </div>
+                            <div class="instrument-long-desc hidden">${inst.longDesc}</div>
+                        `;
+                        card.addEventListener('click', () => openInstrumentModal(getInstrumentData(card)));
+                        instrumentListContainer.appendChild(card);
+                    });
+                }
+            }
+            
+            // Fungsi untuk merender tombol filter
+            function renderFilterButtons() {
+                const categories = ['semua', ...new Set(instrumentData.map(p => p.category))];
+                filterButtonsContainer.innerHTML = '';
+                categories.forEach(category => {
+                    const button = document.createElement('button');
+                    button.textContent = category;
+                    button.dataset.filter = category.toLowerCase();
+                    // [UBAH] Mengganti warna tombol filter menjadi gelap
+                    button.className = 'filter-btn px-4 py-2 text-sm font-medium rounded-full bg-slate-700 text-slate-300 shadow-sm hover:bg-slate-600 transition-colors';
+                    if (category === 'semua') button.classList.add('active');
+                    button.addEventListener('click', () => {
+                        document.querySelector('.filter-btn.active').classList.remove('active');
+                        button.classList.add('active');
+                        handleFilterAndSort();
+                    });
+                    filterButtonsContainer.appendChild(button);
+                });
+            }
+
+            // Fungsi untuk mendapatkan data dari kartu yang diklik
+            function getInstrumentData(card) {
+                return {
+                    name: card.querySelector('.instrument-name').textContent,
+                    imgSrc: card.querySelector('.instrument-image').src,
+                    longDesc: card.querySelector('.instrument-long-desc').innerHTML,
+                };
+            }
+
+            // Fungsi untuk membuka modal
+            function openInstrumentModal(data) {
+                modalName.textContent = data.name;
+                modalImage.src = data.imgSrc;
+                modalDesc.innerHTML = data.longDesc;
+                instrumentModalOverlay.classList.remove('hidden');
+                instrumentModalOverlay.classList.add('flex');
+                setTimeout(() => {
+                    instrumentModal.classList.remove('scale-95', 'opacity-0');
+                }, 50);
+            }
+
+            // Fungsi untuk menutup modal
+            function closeInstrumentModal() {
+                instrumentModal.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    instrumentModalOverlay.classList.add('hidden');
+                    instrumentModalOverlay.classList.remove('flex');
+                }, 300);
+            }
+
+            // Fungsi untuk menangani filter dan sortir
+            const handleFilterAndSort = () => {
+                const searchTerm = (searchInputDesktop.value || searchInputMobile.value).toLowerCase().trim();
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+                const sortValue = sortSelect.value;
+                
+                let filteredInstruments = [...instrumentData];
+
+                // Filter berdasarkan kategori
+                if (activeFilter !== 'semua') {
+                    filteredInstruments = filteredInstruments.filter(p => p.category.toLowerCase() === activeFilter);
+                }
+                
+                // Filter berdasarkan pencarian
+                if (searchTerm) {
+                    filteredInstruments = filteredInstruments.filter(p => {
+                        const searchableText = `${p.name.toLowerCase()} ${p.shortDesc.toLowerCase()} ${p.category.toLowerCase()}`;
+                        return searchableText.includes(searchTerm);
+                    });
+                }
+                
+                // Urutkan hasil
+                switch (sortValue) {
+                    case 'name-asc':
+                        filteredInstruments.sort((a, b) => a.name.localeCompare(b.name));
+                        break;
+                    case 'name-desc':
+                        filteredInstruments.sort((a, b) => b.name.localeCompare(a.name));
+                        break;
+                }
+                
+                renderInstrumentCards(filteredInstruments);
+            };
+            
+            // INISIALISASI
+            function initialize() {
+                renderInstrumentCards(instrumentData);
+                renderFilterButtons();
+
+                // Event Listeners
+                closeModalBtn.addEventListener('click', closeInstrumentModal);
+                instrumentModalOverlay.addEventListener('click', (e) => { if (e.target === instrumentModalOverlay) closeInstrumentModal(); });
+                exploreNowBtn.addEventListener('click', (e) => { e.preventDefault(); document.querySelector(exploreNowBtn.getAttribute('href')).scrollIntoView({ behavior: 'smooth' }); });
+                
+                const handleSearchInput = () => {
+                    searchInputMobile.value = searchInputDesktop.value;
+                    handleFilterAndSort();
+                };
+                searchInputDesktop.addEventListener('input', handleSearchInput);
+                searchInputMobile.addEventListener('input', () => {
+                     searchInputDesktop.value = searchInputMobile.value;
+                     handleFilterAndSort();
+                });
+                searchIconMobile.addEventListener('click', () => { searchBarMobileContainer.classList.toggle('hidden'); });
+                sortSelect.addEventListener('change', handleFilterAndSort);
+            }
+
+            initialize();
+        });
+    </script>
+</body>
+</html>
